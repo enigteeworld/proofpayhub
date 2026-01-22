@@ -24,11 +24,17 @@ function extractReceiptIdFromPath(reqUrl: string) {
   return last;
 }
 
-export async function GET(req: Request, context: any) {
+// ✅ Next.js 16: params can be a Promise, so we type it that way
+type RouteContext = {
+  params: Promise<{ receiptId: string }>;
+};
+
+export async function GET(req: Request, context: RouteContext) {
   const baseUrl = cleanBaseUrl(process.env.PROOFRAILS_BASE_URL || "");
 
-  // 1) Prefer Next params
-  const fromParams = (context?.params?.receiptId || "").toString().trim();
+  // ✅ 1) Prefer Next params — MUST await in Next 16
+  const params = await context.params;
+  const fromParams = (params?.receiptId || "").toString().trim();
 
   // 2) Fallback: parse from URL (handles cases where params don't come through)
   const fromPath = extractReceiptIdFromPath(req.url);
@@ -96,10 +102,14 @@ export async function GET(req: Request, context: any) {
     const record = r2.ok ? raw2.json ?? null : null;
 
     const xml_url =
-      receipt?.xml_url && typeof receipt.xml_url === "string" ? `${baseUrl}${receipt.xml_url}` : null;
+      receipt?.xml_url && typeof receipt.xml_url === "string"
+        ? `${baseUrl}${receipt.xml_url}`
+        : null;
 
     const bundle_url =
-      receipt?.bundle_url && typeof receipt.bundle_url === "string" ? `${baseUrl}${receipt.bundle_url}` : null;
+      receipt?.bundle_url && typeof receipt.bundle_url === "string"
+        ? `${baseUrl}${receipt.bundle_url}`
+        : null;
 
     return NextResponse.json(
       {
@@ -130,4 +140,3 @@ export async function GET(req: Request, context: any) {
     );
   }
 }
-

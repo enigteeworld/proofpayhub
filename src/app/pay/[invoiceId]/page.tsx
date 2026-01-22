@@ -289,7 +289,7 @@ export default function PayInvoicePage() {
       const data = encodeFunctionData({
         abi: ERC20_TRANSFER_ABI,
         functionName: "transfer",
-        args: [to as `0x${string}`, parseUnits(String(usdt0Amount), 18)],
+        args: [to as `0x${string}`, parseUnits(String(usdt0Amount), 6)],
       });
 
       const txHash = await sendTransactionAsync({
@@ -905,3 +905,4 @@ const bgWash: React.CSSProperties = {
   `,
   opacity: 0.9,
 };
+
