@@ -295,7 +295,8 @@ export default function PayInvoicePage() {
       const txHash = await sendTransactionAsync({
         to: USDT0_ADDRESS,
         data,
-        value: 0n,
+        value: BigInt(0),
+
       });
 
       setPendingTxHash(txHash);
